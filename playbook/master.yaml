@@ -1,0 +1,9 @@
+---
+- name: Install apache2 server
+  hosts: all
+  connection: ssh
+  become: true
+  roles:
+    - webserver
+
+  
