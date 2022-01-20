@@ -1,5 +1,5 @@
 ---
-- name: Install docker and python
+- name: Install docker,python,docker-py
   hosts: all
   become: yes
   connection: ssh
@@ -13,17 +13,24 @@
           - python3
           - docker
         state: present
+    
+
     - name: Add centos user to docker group
       user:
           name: centos
           groups: dockerroot
           append: true
+    
+    
+
           
     
 - name: Install docker-compose
   hosts: all
   become: yes
   connection: ssh
+  vars:
+        ansible_python_interpreter: /usr/bin/python3
   tasks: 
     - name: check if docker-compose exists
       stat:
@@ -38,9 +45,34 @@
         mode: +x
       when: not file_check.stat.exists
 
+    - name: Docker Py and Docker-Compose
+      pip:
+        name:
+        - docker
+        - docker-compose
+        state: present  
+
     - name: Start docker
       systemd:
         name: docker
         state: started
+      notify: docker.sock permission
+    
+  handlers:
+    - name: docker.sock permission
+      file:
+        path: /var/run/docker.sock
+        group: dockerroot
 
-
+- name: Pull docker image
+  hosts: all
+  become: yes
+  become_user: centos
+  vars:
+        ansible_python_interpreter: /usr/bin/python3
+  tasks:
+  - name: Pull docker image
+    docker_image: 
+       name: redis
+       source: pull
+      
