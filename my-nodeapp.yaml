@@ -1,0 +1,51 @@
+---
+- name: Install node and npm
+  hosts: all
+  connection: ssh
+  become: true
+  tasks:
+    - name: Update repo and cache
+      apt: force_apt_get=yes update_cache=yes cache_valid_time=3600
+    - name: Install node and npm packages
+      apt:
+        pkg:
+        - nodejs
+        - npm
+    #   register: installcheck    
+    # - name: Install Debug
+    #   debug: var=installcheck
+
+- name: Deploy NodeJs app
+  hosts: all
+  connection: ssh
+  become: true
+  tasks:
+    - name: Untar source 
+      unarchive:
+        src: /home/karthik/Desktop/Devops/DevOps-BootCamp/node-app/nodejs-app-1.0.0.tgz
+        dest: /home/ubuntu/
+      notify: install dependency using npm
+      
+    - name: install dependency using npm
+      npm:
+        path: /home/ubuntu/package
+      
+    - name: start node app
+      command:
+        chdir: /home/ubuntu/package/app
+        cmd: node server
+      async: 45
+      poll: 0
+
+    - name: check app status
+      shell: ps -ef | grep node  
+      register: install_check
+    
+    - debug: msg={{install_check.stdout_lines}}
+
+
+      
+    
+        
+
+
