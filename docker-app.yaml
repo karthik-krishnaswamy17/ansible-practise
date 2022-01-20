@@ -1,0 +1,46 @@
+---
+- name: Install docker and python
+  hosts: all
+  become: yes
+  connection: ssh
+  tasks:
+    - name: Cache update
+      yum: update_cache=yes cacheonly=yes
+ 
+    - name: Install python3 and docker
+      yum:
+        name:
+          - python3
+          - docker
+        state: present
+    - name: Add centos user to docker group
+      user:
+          name: centos
+          groups: dockerroot
+          append: true
+          
+    
+- name: Install docker-compose
+  hosts: all
+  become: yes
+  connection: ssh
+  tasks: 
+    - name: check if docker-compose exists
+      stat:
+        path: /usr/local/bin/docker-compose
+      register: file_check
+  
+
+    - name: Grab docker-compose bin if not exists
+      get_url:
+        url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-{{lookup('pipe','uname -s')}}-{{lookup('pipe','uname -m')}}
+        dest: /usr/local/bin/docker-compose
+        mode: +x
+      when: not file_check.stat.exists
+
+    - name: Start docker
+      systemd:
+        name: docker
+        state: started
+
+
