@@ -3,6 +3,7 @@
   hosts: all
   connection: ssh
   become: true
+
   tasks:
     - name: Update repo and cache
       apt: force_apt_get=yes update_cache=yes cache_valid_time=3600
@@ -11,28 +12,25 @@
         pkg:
         - nodejs
         - npm
-    #   register: installcheck    
-    # - name: Install Debug
-    #   debug: var=installcheck
-
+  
 - name: Deploy NodeJs app
   hosts: all
   connection: ssh
   become: true
+  vars:
+    - home_location: /home/ubuntu
   tasks:
     - name: Untar source 
       unarchive:
         src: /home/karthik/Desktop/Devops/DevOps-BootCamp/node-app/nodejs-app-1.0.0.tgz
-        dest: /home/ubuntu/
-      notify: install dependency using npm
-      
+        dest: "{{home_location}}"
     - name: install dependency using npm
       npm:
-        path: /home/ubuntu/package
+        path: "{{home_location}}/package"
       
     - name: start node app
       command:
-        chdir: /home/ubuntu/package/app
+        chdir: "{{home_location}}/package/app"
         cmd: node server
       async: 45
       poll: 0
