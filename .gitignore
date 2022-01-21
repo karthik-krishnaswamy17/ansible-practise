@@ -2,3 +2,5 @@ hosts.save
 hosts
 mydocker-volume/
 project-vars
+terraform/.terraform.lock*
+terraform/.terraform/*
