@@ -1,15 +1,16 @@
+version: "2"
 services:
-  monogodb:
+  
+  mongodb:
     container_name: mongodb
     image: mongo
-
     ports:
     - 27017:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: adminpassword
     volumes:
-      - mongodb_vol:/data/db/
+      - mongodb_vol:/data/db/  
   mongoexpress:
     container_name: mongo_exp    
     image: mongo-express

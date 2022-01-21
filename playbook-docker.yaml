@@ -67,6 +67,10 @@
     copy:
       src: /home/karthik/Desktop/Devops/DevOps-BootCamp/ansible-practise/docker-compose.yaml
       dest: /home/centos
+  - name: Copy wiat for script compose file.
+    copy:
+      src: /home/karthik/Desktop/Devops/DevOps-BootCamp/ansible-practise/wait-for-it.sh
+      dest: /home/centos
   - name: Docker login
     docker_login:
       registry_url: https://index.docker.io/v1/
